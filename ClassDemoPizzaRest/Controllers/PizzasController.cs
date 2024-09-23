@@ -26,11 +26,15 @@ namespace ClassDemoPizzaRest.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_repo.GetAll());
+            List<IPizza> liste = _repo.GetAll();
+
+            return liste.Count == 0 ? NoContent() : Ok(liste);
         }
 
         // GET api/<PizzasController>/5
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Get(int id)
         {
             try
@@ -38,7 +42,7 @@ namespace ClassDemoPizzaRest.Controllers
                 return Ok(_repo.GetById(id));
             }catch (KeyNotFoundException knfe)
             {
-                return BadRequest(knfe.Message);
+                return NotFound(knfe.Message);
             }
         }
 
