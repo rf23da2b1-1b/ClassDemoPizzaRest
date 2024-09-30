@@ -32,7 +32,8 @@ namespace ClassDemoPizzaRest.Controllers
         }
 
         // GET api/<PizzasController>/5
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Get(int id)
@@ -45,6 +46,48 @@ namespace ClassDemoPizzaRest.Controllers
                 return NotFound(knfe.Message);
             }
         }
+
+        [HttpGet]
+        [Route("byName/{name}")]
+        public IActionResult GetByName(string name)
+        {
+
+            // hack burde være i repo
+            List<IPizza> liste = _repo.GetAll();
+            IPizza pizza = liste.Find(p => p.Name.Contains(name));
+
+            return (pizza is null) ? NotFound() : Ok(pizza);
+
+        }
+
+        /*
+         * sortering
+         */
+        // GET: api/<PizzasController>
+        [HttpGet]
+        [Route("Sort")]
+        public IActionResult GetSortet()
+        {
+            List<IPizza> liste = _repo.GetSortByName();
+
+            return liste.Count == 0 ? NoContent() : Ok(liste);
+        }
+
+
+        /*
+         * Filtering
+         */
+        [HttpGet]
+        [Route("Search")]
+        public IActionResult GetFilter([FromQuery] FilterDTO filter)
+        {
+            List<IPizza> liste = _repo.GetByFilter(lowPrice: filter.lowPrice, highPrice: filter.highPrice);
+
+            return liste.Count == 0 ? NoContent() : Ok(liste);
+        }
+
+
+
 
         // POST api/<PizzasController>
         [HttpPost]
