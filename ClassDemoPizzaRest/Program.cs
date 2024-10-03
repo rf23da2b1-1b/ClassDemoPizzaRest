@@ -10,7 +10,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IPizzaRepository>(new PizzaRepository(true));
 
+builder.Services.AddCors(opt =>
 
+        opt.AddPolicy("AllowGetPut",
+              builder => builder.AllowAnyOrigin().AllowAnyHeader().WithMethods("GET", "PUT")
+              )
+);
 
 var app = builder.Build();
 
@@ -22,6 +27,8 @@ app.UseSwaggerUI();
 
 
 app.UseAuthorization();
+
+app.UseCors("AllowGetPut");
 
 app.MapControllers();
 
